@@ -30,3 +30,24 @@ def manage_collection(req):
             logger.info("Request access: %s" % url)
             return HTTPFound(location=url)
     return {"collection":collection}
+
+def gd_oauth2_callback(req):
+    cid = req.GET.get("state")
+    code = req.GET.get("code")
+    error = req.GET.get("error")
+
+    if cid and code:
+        s = Source(cid)
+        s.oauth2_step2_run(req.user.userid, code)
+        return HTTPFound(location=s.get_settings_url())
+
+    elif cid and error == "access_denied":
+        req.session.flash(u"You declined defpage.com access to your google documents")
+        return HTTPFound(location="/collection/%s" % cid)
+
+    elif error:
+        req.session.flash(u"Error: %s" % error)
+        return HTTPFound(location="/error")
+
+    req.session.flash(u"Missing required parameters")
+    return HTTPFound(location="/error")

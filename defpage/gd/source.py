@@ -95,7 +95,7 @@ def get_googledocs_source(collection_id):
     pass
 
 def save_source(userid, collection_id, access_token, refresh_token, token_expiry):
-    pass
+    print "Saving source. userid:%s, colleciton_id:%s, access_token:%s, refresh_token:%s, token_expiry:%s" % (userid, collection_id, access_token, refresh_token, token_expiry)
 
 def save_access_token(access_token, token_expiry):
     pass

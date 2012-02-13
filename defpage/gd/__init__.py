@@ -42,4 +42,7 @@ def main(global_config, **settings):
                     route_name="manage_collection",
                     renderer="defpage.gd:templates/manage_collection.pt")
 
+    config.add_view("defpage.gd.views.gd_oauth2_callback",
+                    "gd_oauth2_callback")
+
     return config.make_wsgi_app()
