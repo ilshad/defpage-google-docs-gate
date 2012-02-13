@@ -6,5 +6,6 @@ def renderer_add_globals(e):
     e["base_url"] = system_params.base_url
     e["static_url"] = system_params.static_url
     e["logout_url"] = system_params.logout_url
+    e["accounts_url"] = system_params.accounts_url
     e["help_url"] = system_params.help_url
 
