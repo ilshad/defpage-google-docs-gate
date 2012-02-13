@@ -4,6 +4,7 @@ from pyramid.exceptions import Forbidden
 from pyramid.httpexceptions import HTTPUnauthorized
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from defpage.lib.authentication import UserInfoAuthenticationPolicy
+from defpage.lib.util import is_int
 from defpage.gd.config import system_params
 
 def main(global_config, **settings):
@@ -33,5 +34,12 @@ def main(global_config, **settings):
     config.add_view("defpage.gd.views.empty",
                     "error",
                     renderer="defpage.gd:templates/error.pt")
+
+    # manage source
+    config.add_route("manage_collection", "/collections/{name}",
+                     custom_predicates=(is_int,))
+    config.add_view("defpage.gd.views.manage_collection",
+                    route_name="manage_collection",
+                    renderer="defpage.gd:templates/manage_collection.pt")
 
     return config.make_wsgi_app()

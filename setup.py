@@ -12,6 +12,7 @@ requires = [
     'WebError',
     'httplib2',
     'defpage.lib',
+    'gdata',
     ]
 
 if sys.version_info[:3] < (2,5,0):

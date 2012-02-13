@@ -6,10 +6,8 @@
       xml:lang="ru">
   <metal:block use-macro="layout.macros['master']">
     <metal:block fill-slot="main">
-      <div id="main">
-	<h1>You are not authorized to view this page.</h1>
-	<a href="${base_url}">Go to main page</a>
-      </div>
+      <h1>You are not authorized to view this page.</h1>
+      <a href="${base_url}">Go to main page</a>
     </metal:block>
   </metal:block>
 </html>

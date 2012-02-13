@@ -46,7 +46,9 @@
 	      <div class="notice" tal:content="structure item" />
 	    </tal:block>
 	  </metal:block>
-	  <metal:block define-slot="main"></metal:block>
+	  <div id="main">
+	    <metal:block define-slot="main"></metal:block>
+	  </div>
 	</div>
 	<div class="span-800" id="footer">
 	  <div class="span-400" id="addinfo">
