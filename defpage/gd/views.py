@@ -1,3 +1,4 @@
+import json
 import logging
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render_to_response
@@ -51,3 +52,20 @@ def gd_oauth2_callback(req):
 
     req.session.flash(u"Missing required parameters")
     return HTTPFound(location="/error")
+
+def gd_select_folder(req):
+    gd = IExternal(req.context)
+    can_change = not gd.is_complete()
+    if req.POST.get("submit") and can_change:
+        folder_id = req.POST.get("folder_id")
+        if folder_id:
+            gd.set_folder(folder_id.split(":")[1])
+            req.session.flash(u'You have connected DefPage to the Google Docs'
+                              u' folder <em>"%s"</em>' % req.POST.get("folder_title"))
+            return HTTPFound(location="/group/%s" % req.context.group_id)
+    return {'can_change':can_change}
+
+def gd_folders_json(req):
+    gd = IExternal(req.context)
+    folders = gd.get_folders()
+    return Response(body=json.dumps(folders), content_type='application/json')

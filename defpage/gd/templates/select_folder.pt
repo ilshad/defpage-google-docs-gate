@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xml:lang="ru">
+  <metal:block use-macro="layout.macros['master']">
+    <metal:block fill-slot="main">
+      <div id="collection_id" style="display:none">${request.matchdict["name"]}</div>
+
+      <div class="actions_master">
+	<tal:block condition="can_change">
+	  Click on the folder you wish to import into defpage.com
+	</tal:block>
+	<tal:block condition="not can_change">
+	  You can't change folder.
+	</tal:block>
+      </div>
+
+      <div id="folders" style="margin-top:10px;"></div>
+      <div class="show_choice">Selected folder: <span id="show_choice">nothing</span></div>
+
+      <form method="POST" tal:condition="can_change"
+	    tal:attributes="action python:request.path_url">
+	<input type="hidden" name="folder_id" id="folder_id" value="" />
+	<input type="hidden" name="folder_title" id="folder_title" value="" />
+	<input type="submit" disabled name="submit" id="submit" class="first" value="Save" />
+      </form>
+
+      <script type="text/javascript">
+	$(function () {
+	    function select_folder (element) {
+                $("#folder_id").val(element.id);
+                $("#folder_title").val($(element).text());
+	        $("#show_choice").text($(element).text());
+	        $(".select_row_selected").removeClass("select_row_selected");
+	        $(element).addClass("select_row_selected");
+                $("#submit").removeAttr("disabled").focus();
+	    };
+            var container = $("#folders");
+	    $.getJSON("/collection/" + $("#collection_id").text() + "/folders_json",
+                      {}, function(data) {
+	                 $.each(data, function(i, item) {
+	                     var row = $('<div class="select_row" />');
+	                     row.attr("id", item.id);
+	                     row.text(item.title);
+	                     row.bind("mouseenter mouseleave", function(e){
+                                 $(this).toggleClass("select_row_over");
+	                     });
+	                     if ($('#folder_id').length > 0) {
+	                         row.bind("click", function (e) { select_folder(this); });
+	                     };
+	                     if ($('#folder_id').length == 0) {
+	                         row.bind("click", function (e) {
+                                     $.prompt("You can't change folder.");
+	                         });
+	                     };
+	                     if (item.saved) { select_folder(row); };
+	                     container.append(row);
+                         });
+                      });
+	});
+      </script>
+
+    </metal:block>
+  </metal:block>
+</html>

@@ -45,4 +45,15 @@ def main(global_config, **settings):
     config.add_view("defpage.gd.views.gd_oauth2_callback",
                     "gd_oauth2_callback")
 
+    config.add_route("select_folder", "/collection/{name}/select_folder",
+                     custom_predicates=(is_int,))
+    config.add_view("defpage.gd.views.select_folder",
+                    route_name="select_folder",
+                    renderer="defpage.gd:templates/select_folder.pt")
+
+    config.add_route("folders_json", "/collection/{name}/folders_json",
+                     custom_predicates=(is_int,))
+    config.add_view(route_name="folders_json",
+                    view="defpage.gd.views.folders_json")
+
     return config.make_wsgi_app()
