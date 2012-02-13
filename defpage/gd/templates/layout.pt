@@ -18,60 +18,24 @@
       <![endif]-->
       <script type="text/javascript" src="${static_url}/js/jquery-1.7.1.min.js"></script>
       <script type="text/javascript" src="${static_url}/js/jqplug.js"></script>
-      <script type="text/javascript" src="${static_url}/js/defpage.js"></script>
     </head>
     <body>
       <div tal:attributes="class string: container ${request.GET.get('x') and 'showgrid'}">
 	<div id="header" class="span-800">
 	  <div class="span-200">
-	    <a href="/" id="logo"><span class="logo1">def</span><span class="logo2">page</span></a>
+	    <a href="/" id="logo"><span class="logo1">def</span><span class="logo2">page</span></a> Google Docs
 	  </div>
 	  <div id="topbar" class="span-600 last textalign-right">
 	    <tal:block condition="request.user.authenticated">
 	      <div id="personal_menu">
-		<a href="#" id="usertitle" onclick="return false;">${request.user.email}</a>
-		<div id="personal_menu_items">
-		  <a href="${accounts_url}${request.user.userid}">Account</a>
-		  <a href="${logout_url}">Logout</a>
-		</div>
+		${request.user.email}
+		<a href="${logout_url}">Logout</a>
 	      </div>
-	    </tal:block>
-	    <tal:block condition="not request.user.authenticated">
-	      <a href="${login_url}" style="margin-right:10px;">Login</a>
 	    </tal:block>
 	  </div>
 	</div>
 	<div id="cleartop"></div>
-	<div class="span-200 first">
-	  <metal:block define-slot="sidebar">
-	    <tal:block condition="len(request.user.collections) > 0">
-	      <div class="collection_item">
-		<a href="/" class="${request.path == '/' and 'selected' or ''}">
-		  Free documents
-		</a>
-	      </div>
-	      <div class="collection_item" tal:repeat="c request.user.collections">
-		<a href="/collection/${c['id']}" class="${active_collection_id == c['id'] and 'selected' or ''}">
-		  ${c['title']}
-		</a>
-	      </div>
-	      <div class="collection_item">
-		<a href="/create_collection" class="${request.path == '/create_collection' and 'selected' or ''} special">
-		  Create new
-		</a>
-	      </div>
-	      <div id="bottom_sidebar">
-		<div class="collection_item">
-		  <a href="/public" class="${request.path == '/public' and 'selected' or ''} special">
-		    <b>Public collections</b>
-		  </a>
-		</div>
-	      </div>
-	    </tal:block>
-	    <tal:block condition="len(request.user.collections) == 0"></tal:block>
-	  </metal:block>
-	</div>
-	<div class="span-600 last">
+	<div class="span-800">
 	  <metal:block define-slot="messages">
 	    <tal:block repeat="item request.session.pop_flash()">
 	      <div class="notice" tal:content="structure item" />

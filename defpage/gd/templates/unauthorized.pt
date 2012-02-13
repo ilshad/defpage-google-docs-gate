@@ -8,7 +8,7 @@
     <metal:block fill-slot="main">
       <div id="main">
 	<h1>You are not authorized to view this page.</h1>
-	<a href="/">Go to main page</a>
+	<a href="${base_url}">Go to main page</a>
       </div>
     </metal:block>
   </metal:block>

@@ -11,7 +11,7 @@
 	  <tr>
 	    <td>
 	      <h2>Page not found</h2>
-	      <a href="/">Go to Home</a>
+	      <a href="${base_url}">Go to Home</a>
 	    </td>
 	  </tr>
 	</table>
