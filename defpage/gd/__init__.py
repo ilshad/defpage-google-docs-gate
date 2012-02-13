@@ -36,7 +36,7 @@ def main(global_config, **settings):
                     renderer="defpage.gd:templates/error.pt")
 
     # manage source
-    config.add_route("manage_collection", "/collections/{name}",
+    config.add_route("manage_collection", "/collection/{name}",
                      custom_predicates=(is_int,))
     config.add_view("defpage.gd.views.manage_collection",
                     route_name="manage_collection",
