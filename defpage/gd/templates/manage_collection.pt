@@ -6,14 +6,22 @@
       xml:lang="ru">
   <metal:block use-macro="layout.macros['master']">
     <metal:block fill-slot="main">
-      <form method="POST" action="${request.path_url}">
-	<fieldset style="width:400px;">
-	  <p>You are setting up Google Docs source for the collection <b>${collection["title"]}</b>.Then, the selected folder ('collection') in Google Docs will be synchronized with this collection.</p>
-	  
-	  <input type="submit" name="continue" value="Continue" />
-	  <a href="${base_url}/collection/${request.matchdict['name']}">Cancel</a>
-	</fieldset>
-      </form>
+      <tal:block condition="not collection['sources']">
+	<form method="POST" action="${request.path_url}">
+	  <fieldset style="width:400px;">
+	    <p>You are setting up Google Docs as source for the collection <b>${collection["title"]}
+	      </b>. Then, the selected folder in Google Docs will be synchronized
+	      with this collection.</p>
+
+	    <input type="submit" name="continue" value="Continue" />
+	    <a href="${base_url}/collection/${request.matchdict['name']}">Cancel</a>
+	  </fieldset>
+	</form>
+      </tal:block>
+
+      <tal:block condition="collection['sources']">
+	This collection is connected to source already.
+      </tal:block>
     </metal:block>
   </metal:block>
 </html>
