@@ -24,8 +24,11 @@
       <div tal:attributes="class string: container ${request.GET.get('x') and 'showgrid'}">
 	<div id="header" class="span-800">
 	  <div class="span-500 first">
-	    <a href="${base_url}" id="logo"><span class="logo1">def</span><span class="logo2">page</span></a>
-	    <span style="font-size:20px; font-weight:bold; padding-left:10px;"><span style="color:#2967a5;">Google Docs™</span><span style="color:#676767;"> Integration</span></span>
+	    <a href="${base_url}" id="logo">
+	      <span class="logo1">def</span><span class="logo2">page</span>
+	      <span style="color:#676767;">+</span>
+	      <span style="color:#2967a5;">Google Docs™</span>
+	    </a>
 	  </div>
 	  <div id="topbar" class="span-300 last textalign-right">
 	    <tal:block condition="request.user.authenticated">
