@@ -61,6 +61,6 @@
 	</div>
       </div>
       <div id="ajax_loader">&nbsp;</div>
-      </body>
+    </body>
   </metal:block>
 </html>
