@@ -1,8 +1,10 @@
 import logging
+from datetime import datetime
 from gdata.gauth import OAuth2Token
 from gdata.docs.client import DocsClient
 from gdata.client import RequestError
 from defpage.gd.config import system_params
+from defpage.gd import meta
 
 logger = logging.getLogger("defpage.gd")
 
@@ -10,21 +12,67 @@ GD_SCOPE = "https://docs.google.com/feeds/"
 USER_AGENT = ""
 GET_FOLDER = "https://docs.google.com/feeds/default/private/full/folder:%s"
 
-class Source(object):
+class SourceTypeException(Exception):
+    """Source type is not Google Docs"""
 
-    source = None
+class SourceInfo:
 
-    def __init__(self, collection_id):
+    def __init__(self, sources):
+        if len(sources) > 0:
+            info = sources[0]
+            if info["type"] == "gd":
+                self.folder_id = info.get("folder_id", "")
+                self.access_token = info.get("access_token", "")
+                self.refresh_token = info.get("refresh_token", "")
+                self.token_expiry = info.get("token_expiry", "")
+                return
+        raise SourceTypeException
+
+    def __call__(self):
+        info = {"type": "gd",
+                "folder_id": self.folder_id,
+                "access_token": self.access_token,
+                "refresh_token": self.refresh_token,
+                "token_expiry": self.token_expiry}
+        return [info] # only one source currently allowed
+
+    def is_complete(self):
+        return bool(self.folder_id)
+
+class Source:
+
+    info = None # SourceInfo
+
+    def __init__(self, collection_id, userid):
         self.collection_id = collection_id
+        self.userid = userid
         self.token = OAuth2Token(client_id=system_params.gd_oauth_client_id,
                                  client_secret=system_params.gd_oauth_client_secret,
                                  scope=GD_SCOPE,
                                  user_agent=USER_AGENT)
 
+    def maybe_info(self):
+        return SourceInfo(meta.get_collection(self.userid, self.collection_id))
+
+    def load(self):
+        self.info = self.maybe_info()
+
+    def save(self):
+        meta.edit_collection(self.userid, self.collection_id, sources=self.info())
+
+    def update_info_from_token(self):
+        self.info.access_token = self.token.access_token
+        self.info.refresh_token = self.token.refresh_token
+        self.info.token_expiry = self.token.token_expiry
+
+    def update_token_from_info(self):
+        self.token.access_token = self.info.access_token
+        self.token.refresh_token = self.info.refresh_token
+        self.token.token_expiry = self.info.token_expiry
 
     def get_info(self):
-        client = self._get_client()
-        folder_id = self.source["folder_id"]
+        client = self.get_client()
+        folder_id = self.info.folder_id
         try:
             folder_entry = client.get_entry(GET_FOLDER % folder_id)
         except RequestError as err:
@@ -42,43 +90,27 @@ class Source(object):
                                                  access_type='offline',
                                                  approval_prompt='force')
 
-    def oauth2_step2_run(self, userid, code):
+    def oauth2_step2_run(self, code):
         self.token.redirect_uri = system_params.gd_oauth_redirect_uri
         self.token.get_access_token(code)
+        self.info = SourceInfo[{"type": "gd",
+                                "access_token": self.token.access_token,
+                                "refresh_token": self.token.refresh_token,
+                                "token_expiry": self.token.token_expiry}]
+        self.save()
 
-        save_source(userid,
-                    self.collection_id,
-                    self.token.access_token,
-                    self.token.refresh_token,
-                    self.token.token_expiry)
-
-    def _remember(self):
-        self.source = get_googledocs_source(self.collection_id)
-
-    def _get_client(self):
-        # gdata-2.0.15
+    def get_client(self):
         client = DocsClient()
         client.http_client.debug = system_params.gd_debug_mode
-        self._remember()
-
-        # get tokens form database
-        self.token.access_token = self.imp.access_token
-        self.token.refresh_token = self.imp.refresh_token
-        self.token.token_expiry = self.imp.token_expiry
-
-        r = self.token.authorize(client)
-        return r
-
-    # set tokens into database after refreshing
-    def _update(self):
-        save_access_token(self.token.access_token, self.token.token_expiry)
-        save_refresh_token(self.token.refresh_token)
+        self.load()
+        self.update_token_from_info()
+        return self.token.authorize(client)
 
     def get_folders(self):
-        client = self._get_client()
+        client = self.get_client()
         feed = client.get_resources(uri='/feeds/default/private/full/-/folder')
-        self._update()
-        saved = self.source["folder_id"]
+        self.update_info_from_token()
+        saved = self.info.folder_id
         r = []
         for x in feed.entry:
             folder_id = x.resource_id.text
@@ -91,14 +123,10 @@ class Source(object):
             print item
         return r
 
-def get_googledocs_source(collection_id):
-    pass
+    def is_complete(self):
+        i = self._maybe_info()
+        return i.is_complete()
 
-def save_source(userid, collection_id, access_token, refresh_token, token_expiry):
-    print "Saving source. userid:%s, colleciton_id:%s, access_token:%s, refresh_token:%s, token_expiry:%s" % (userid, collection_id, access_token, refresh_token, token_expiry)
-
-def save_access_token(access_token, token_expiry):
-    pass
-
-def save_refresh_token(refresh_token):
-    pass
+    def set_folder(self, folder_id):
+        self.info = self._maybe_info()
+        self.info.folder_id = folder_id

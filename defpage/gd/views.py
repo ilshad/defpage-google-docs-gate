@@ -2,6 +2,7 @@ import json
 import logging
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render_to_response
+from pyramid.response import Response
 from defpage.lib.authentication import authenticated
 from defpage.gd.config import system_params
 from defpage.gd.source import Source
@@ -26,7 +27,7 @@ def manage_collection(req):
     collection = meta.get_collection(req.user.userid, cid)
     if not collection["sources"]:
         if req.POST.get("continue"):
-            s = Source(cid)
+            s = Source(cid, req.user.userid)
             url = s.oauth2_step1_get_url()
             logger.info("Request access: %s" % url)
             return HTTPFound(location=url)
@@ -38,7 +39,7 @@ def gd_oauth2_callback(req):
     error = req.GET.get("error")
 
     if cid and code:
-        s = Source(cid)
+        s = Source(cid, req.user.userid)
         s.oauth2_step2_run(req.user.userid, code)
         return HTTPFound(location=s.get_settings_url())
 
@@ -53,19 +54,18 @@ def gd_oauth2_callback(req):
     req.session.flash(u"Missing required parameters")
     return HTTPFound(location="/error")
 
-def gd_select_folder(req):
-    gd = IExternal(req.context)
-    can_change = not gd.is_complete()
+def select_folder(req):
+    s = Source(req.matchdict["name"], req.user.userid)
+    can_change = not s.is_complete()
     if req.POST.get("submit") and can_change:
         folder_id = req.POST.get("folder_id")
         if folder_id:
-            gd.set_folder(folder_id.split(":")[1])
+            s.set_folder(folder_id.split(":")[1])
             req.session.flash(u'You have connected DefPage to the Google Docs'
                               u' folder <em>"%s"</em>' % req.POST.get("folder_title"))
             return HTTPFound(location="/group/%s" % req.context.group_id)
     return {'can_change':can_change}
 
-def gd_folders_json(req):
-    gd = IExternal(req.context)
-    folders = gd.get_folders()
-    return Response(body=json.dumps(folders), content_type='application/json')
+def folders_json(req):
+    s = Source(req.matchdict["name"], req.user.userid)
+    return Response(body=json.dumps(s.get_folders()), content_type='application/json')
