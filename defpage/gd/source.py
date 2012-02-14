@@ -131,5 +131,6 @@ class Source:
         return i.is_complete()
 
     def set_folder(self, folder_id):
-        self.info = self.maybe_info()
+        self.load()
         self.info.folder_id = folder_id
+        self.save()

@@ -55,15 +55,16 @@ def gd_oauth2_callback(req):
     return HTTPFound(location="/error")
 
 def select_folder(req):
-    s = Source(req.matchdict["name"], req.user.userid)
+    cid = req.matchdict["name"]
+    s = Source(cid, req.user.userid)
     can_change = not s.is_complete()
     if req.POST.get("submit") and can_change:
         folder_id = req.POST.get("folder_id")
         if folder_id:
             s.set_folder(folder_id.split(":")[1])
-            req.session.flash(u'You have connected DefPage to the Google Docs'
+            req.session.flash(u'You have connected defpage.com to the Google Docs'
                               u' folder <em>"%s"</em>' % req.POST.get("folder_title"))
-            return HTTPFound(location="/group/%s" % req.context.group_id)
+            return HTTPFound(location="/collection/%s" % cid)
     return {'can_change':can_change}
 
 def folders_json(req):
