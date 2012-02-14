@@ -11,7 +11,8 @@
 	  Click on the folder you wish to import into defpage.com
 	</tal:block>
 	<tal:block condition="not can_change">
-	  You can't change folder.
+	  <p>The folder is configured. You can't change it.</p>
+	  <a href="${base_url}/collection/${request.matchdict['name']}/source">Go back</a>
 	</tal:block>
       </div>
 
@@ -48,11 +49,11 @@
 	                     if ($('#folder_id').length > 0) {
 	                         row.bind("click", function (e) { select_folder(this); });
 	                     };
-	                     if ($('#folder_id').length == 0) {
+	                     /*if ($('#folder_id').length == 0) {
 	                         row.bind("click", function (e) {
                                      $.prompt("You can't change folder.");
 	                         });
-	                     };
+	                     };*/
 	                     if (item.saved) { select_folder(row); };
 	                     container.append(row);
                          });
