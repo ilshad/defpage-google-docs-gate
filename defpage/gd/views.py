@@ -40,7 +40,7 @@ def gd_oauth2_callback(req):
 
     if cid and code:
         s = Source(cid, req.user.userid)
-        s.oauth2_step2_run(req.user.userid, code)
+        s.oauth2_step2_run(code)
         return HTTPFound(location=s.get_settings_url())
 
     elif cid and error == "access_denied":

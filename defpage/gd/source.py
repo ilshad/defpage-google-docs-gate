@@ -24,7 +24,8 @@ class SourceInfo:
                 self.folder_id = info.get("folder_id", "")
                 self.access_token = info.get("access_token", "")
                 self.refresh_token = info.get("refresh_token", "")
-                self.token_expiry = info.get("token_expiry", "")
+                expiry = info.get("token_expiry", None)
+                self.token_expiry = expiry and datetime.fromtimestamp(int(expiry))
                 return
         raise SourceTypeException
 
@@ -33,7 +34,7 @@ class SourceInfo:
                 "folder_id": self.folder_id,
                 "access_token": self.access_token,
                 "refresh_token": self.refresh_token,
-                "token_expiry": self.token_expiry}
+                "token_expiry": self.token_expiry.strftime("%s")}
         return [info] # only one source currently allowed
 
     def is_complete(self):
@@ -52,13 +53,18 @@ class Source:
                                  user_agent=USER_AGENT)
 
     def maybe_info(self):
-        return SourceInfo(meta.get_collection(self.userid, self.collection_id))
+        collection = meta.get_collection(self.userid, self.collection_id)
+        return SourceInfo(collection["sources"])
 
     def load(self):
         self.info = self.maybe_info()
 
     def save(self):
         meta.edit_collection(self.userid, self.collection_id, sources=self.info())
+
+    def create_info_from_token(self):
+        self.info = SourceInfo([{"type": "gd"}])
+        self.update_info_from_token()
 
     def update_info_from_token(self):
         self.info.access_token = self.token.access_token
@@ -93,10 +99,7 @@ class Source:
     def oauth2_step2_run(self, code):
         self.token.redirect_uri = system_params.gd_oauth_redirect_uri
         self.token.get_access_token(code)
-        self.info = SourceInfo[{"type": "gd",
-                                "access_token": self.token.access_token,
-                                "refresh_token": self.token.refresh_token,
-                                "token_expiry": self.token.token_expiry}]
+        self.create_info_from_token()
         self.save()
 
     def get_client(self):
@@ -124,9 +127,9 @@ class Source:
         return r
 
     def is_complete(self):
-        i = self._maybe_info()
+        i = self.maybe_info()
         return i.is_complete()
 
     def set_folder(self, folder_id):
-        self.info = self._maybe_info()
+        self.info = self.maybe_info()
         self.info.folder_id = folder_id
