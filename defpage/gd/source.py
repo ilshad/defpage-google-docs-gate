@@ -86,9 +86,6 @@ class Source:
             return {u'error': err}
         return {u"folder id":folder_id, u"title":folder_entry.title}
 
-    def get_settings_url(self):
-        return "/collection/%s/select_folder" % self.collection_id
-
     def oauth2_step1_get_url(self):
         return self.token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
                                                  response_type='code',

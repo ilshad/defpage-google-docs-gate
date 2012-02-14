@@ -39,8 +39,7 @@ def main(global_config, **settings):
     config.add_route("manage_collection", "/collection/{name}",
                      custom_predicates=(is_int,))
     config.add_view("defpage.gd.views.manage_collection",
-                    route_name="manage_collection",
-                    renderer="defpage.gd:templates/manage_collection.pt")
+                    route_name="manage_collection")
 
     config.add_view("defpage.gd.views.gd_oauth2_callback",
                     "gd_oauth2_callback")
