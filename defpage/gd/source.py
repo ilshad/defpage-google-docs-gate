@@ -12,6 +12,8 @@ logger = logging.getLogger("defpage.gd")
 GD_SCOPE = "https://docs.google.com/feeds/"
 USER_AGENT = ""
 GET_FOLDER = "https://docs.google.com/feeds/default/private/full/folder:%s"
+FOLDERS_LIST = "/feeds/default/private/full/-/folder"
+FOLDER_CONTENT = "/feeds/default/private/full/folder:%s/contents"
 DOCTYPES = ("document")
 
 class SourceTypeException(Exception):
@@ -110,7 +112,7 @@ class Source:
 
     def get_folders(self):
         client = self.get_client()
-        feed = client.get_resources(uri="/feeds/default/private/full/-/folder")
+        feed = client.get_resources(uri=FOLDERS_LIST)
         self.update_info_from_token()
         saved = self.info.folder_id
         r = []
@@ -135,8 +137,7 @@ class Source:
 
     def get_docs(self):
         client = self.get_client()
-        uri = "/feeds/default/private/full/folder:%s/contents" % self.info.folder_id
-        feed = client.get_resources(uri=uri)
+        feed = client.get_resources(uri=FOLDER_CONTENT % self.info.folder_id)
         self.update_info_from_token()
         r = []
         for x in feed.entry:
