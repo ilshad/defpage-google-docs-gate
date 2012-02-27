@@ -1,3 +1,4 @@
+import urllib
 import logging
 from datetime import datetime
 from gdata.gauth import OAuth2Token
@@ -11,6 +12,7 @@ logger = logging.getLogger("defpage.gd")
 GD_SCOPE = "https://docs.google.com/feeds/"
 USER_AGENT = ""
 GET_FOLDER = "https://docs.google.com/feeds/default/private/full/folder:%s"
+DOCTYPES = ("document")
 
 class SourceTypeException(Exception):
     """Source type is not Google Docs"""
@@ -108,19 +110,18 @@ class Source:
 
     def get_folders(self):
         client = self.get_client()
-        feed = client.get_resources(uri='/feeds/default/private/full/-/folder')
+        feed = client.get_resources(uri="/feeds/default/private/full/-/folder")
         self.update_info_from_token()
         saved = self.info.folder_id
         r = []
         for x in feed.entry:
             folder_id = x.resource_id.text
-            item = {'title':unicode(x.title.text), 'id':folder_id}
+            item = {"title":unicode(x.title.text), "id":folder_id}
             if saved:
                 item["saved"] = folder_id.split(":")[1] == saved
             else:
                 item["saved"] = False
             r.append(item)
-            print item
         return r
 
     def is_complete(self):
@@ -131,3 +132,15 @@ class Source:
         self.load()
         self.info.folder_id = folder_id
         self.save()
+
+    def get_docs(self):
+        client = self.get_client()
+        uri = "/feeds/default/private/full/folder:%s/contents" % self.info.folder_id
+        feed = client.get_resources(uri=uri)
+        self.update_info_from_token()
+        r = []
+        for x in feed.entry:
+            doctype, docid = tuple(x.resource_id.text.split(":"))
+            if doctype in DOCTYPES:
+                r.append({"id":docid, "title":x.title.text, "modified":x.updated.text})
+        return r

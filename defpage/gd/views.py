@@ -8,6 +8,7 @@ from pyramid.renderers import render_to_response
 from defpage.lib.authentication import authenticated
 from defpage.gd.config import system_params
 from defpage.gd.source import Source
+from defpage.gd.source import SourceTypeException
 from defpage.gd import meta
 
 logger = logging.getLogger("defpage.gd")
@@ -94,4 +95,8 @@ def folders_json(req):
 
 @api
 def api_collection(req):
-    return Response(body=json.dumps("api here"), content_type="application/json")
+    s = Source(req.matchdict["name"], system_params.system_user)
+    try:
+        return s.get_docs()
+    except SourceTypeException:
+        raise HTTPNotFound
