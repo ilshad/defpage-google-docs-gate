@@ -1,8 +1,10 @@
 import json
 import logging
-from pyramid.httpexceptions import HTTPFound
-from pyramid.renderers import render_to_response
+from pyramid.settings import asbool
 from pyramid.response import Response
+from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.renderers import render_to_response
 from defpage.lib.authentication import authenticated
 from defpage.gd.config import system_params
 from defpage.gd.source import Source
@@ -20,6 +22,13 @@ def forbidden(req):
 def unauthorized(req):
     req.response.status = 401
     return {}
+
+def api(func):
+    def wrapper(req):
+        if not asbool(system_params.api):
+            raise HTTPNotFound
+        return func(req)
+    return wrapper
 
 @authenticated
 def manage_collection(req):
@@ -81,4 +90,8 @@ def select_folder(req):
 @authenticated
 def folders_json(req):
     s = Source(req.matchdict["name"], req.user.userid)
-    return Response(body=json.dumps(s.get_folders()), content_type='application/json')
+    return Response(body=json.dumps(s.get_folders()), content_type="application/json")
+
+@api
+def api_collection(req):
+    return Response(body=json.dumps("api here"), content_type="application/json")
