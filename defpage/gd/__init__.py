@@ -28,7 +28,7 @@ def main(global_config, **settings):
     config.add_view("defpage.gd.views.unauthorized",
                     "", context=HTTPUnauthorized,
                     renderer="defpage.gd:templates/unauthorized.pt")
-    config.add_view("defpage.gd.views.empty", "",
+    config.add_view("defpage.gd.views.notfound", "",
                     renderer="defpage.gd:templates/notfound.pt",
                     context=NotFound)
     config.add_view("defpage.gd.views.empty",

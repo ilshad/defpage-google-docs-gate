@@ -24,6 +24,10 @@ def unauthorized(req):
     req.response.status = 401
     return {}
 
+def notfound(req):
+    req.response.status = 404
+    return {}
+
 def api(func):
     def wrapper(req):
         if not asbool(system_params.api):
