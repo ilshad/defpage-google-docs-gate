@@ -4,6 +4,7 @@ from datetime import datetime
 from gdata.gauth import OAuth2Token
 from gdata.docs.client import DocsClient
 from gdata.client import RequestError
+from defpage.lib.util import epochz
 from defpage.gd.config import system_params
 from defpage.gd import meta
 
@@ -28,7 +29,7 @@ class SourceInfo:
                 self.folder_id = info.get("folder_id", "")
                 self.access_token = info.get("access_token", "")
                 self.refresh_token = info.get("refresh_token", "")
-                expiry = info.get("token_expiry", None)
+                expiry = info.get("token_expiry", None)                
                 self.token_expiry = expiry and datetime.fromtimestamp(int(expiry))
                 return
         raise SourceTypeException
@@ -38,7 +39,7 @@ class SourceInfo:
                 "folder_id": self.folder_id,
                 "access_token": self.access_token,
                 "refresh_token": self.refresh_token,
-                "token_expiry": self.token_expiry.strftime("%s")}
+                "token_expiry": str(epochz(self.token_expiry))}
         return [info] # only one source currently allowed
 
     def is_complete(self):
