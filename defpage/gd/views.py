@@ -37,7 +37,7 @@ def api(func):
 
 @authenticated
 def manage_collection(req):
-    cid = req.matchdict["name"]
+    cid = int(req.matchdict["name"])
     collection = meta.get_collection(req.user.userid, cid)
     sources = collection["sources"]
 
@@ -58,7 +58,7 @@ def manage_collection(req):
 
 @authenticated
 def gd_oauth2_callback(req):
-    cid = req.GET.get("state")
+    cid = int(req.GET.get("state"))
     code = req.GET.get("code")
     error = req.GET.get("error")
 
@@ -80,7 +80,7 @@ def gd_oauth2_callback(req):
 
 @authenticated
 def select_folder(req):
-    cid = req.matchdict["name"]
+    cid = int(req.matchdict["name"])
     s = Source(cid, req.user.userid)
     can_change = not s.is_complete()
     if req.POST.get("submit") and can_change:
@@ -94,12 +94,12 @@ def select_folder(req):
 
 @authenticated
 def folders_json(req):
-    s = Source(req.matchdict["name"], req.user.userid)
+    s = Source(int(req.matchdict["name"]), req.user.userid)
     return Response(body=json.dumps(s.get_folders()), content_type="application/json")
 
 @api
 def api_collection(req):
-    s = Source(req.matchdict["name"], system_params.system_user)
+    s = Source(int(req.matchdict["name"]), system_params.system_user)
     try:
         return s.get_docs()
     except SourceTypeException:

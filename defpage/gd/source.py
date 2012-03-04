@@ -7,6 +7,7 @@ from gdata.docs.client import DocsClient
 from gdata.client import RequestError
 from defpage.gd.config import system_params
 from defpage.gd import meta
+from defpage.gd import platform
 
 logger = logging.getLogger("defpage.gd")
 
@@ -135,6 +136,7 @@ class Source:
         self.load()
         self.info.folder_id = folder_id
         self.save()
+        platform.sync_collection_source(self.collection_id)
 
     def get_docs(self):
         client = self.get_client()
