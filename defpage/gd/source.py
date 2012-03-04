@@ -136,7 +136,7 @@ class Source:
         self.load()
         self.info.folder_id = folder_id
         self.save()
-        platform.sync_collection_source(self.collection_id)
+        platform.update_meta(self.collection_id)
 
     def get_docs(self):
         client = self.get_client()
