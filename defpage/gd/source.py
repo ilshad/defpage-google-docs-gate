@@ -82,16 +82,6 @@ class Source:
         self.token.refresh_token = self.info.refresh_token
         self.token.token_expiry = self.info.token_expiry
 
-    def get_info(self):
-        client = self.get_client()
-        folder_id = self.info.folder_id
-        try:
-            folder_entry = client.get_entry(GET_FOLDER % folder_id)
-        except RequestError as err:
-            logger.info(err)
-            return {u'error': err}
-        return {u"folder id":folder_id, u"title":folder_entry.title}
-
     def oauth2_step1_get_url(self):
         return self.token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
                                                  response_type='code',
