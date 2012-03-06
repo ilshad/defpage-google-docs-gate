@@ -89,6 +89,9 @@ class Source:
         self._update_token_from_info()
         return self.token.authorize(client)
 
+    def _call(self, method, **kw):
+        return method(**kw)
+
     def oauth2_step1_get_url(self):
         return self.token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
                                                  response_type='code',
@@ -114,7 +117,7 @@ class Source:
 
     def get_folders(self):
         client = self._get_client()
-        feed = client.get_resources(uri=FOLDERS_LIST)
+        feed = self._call(client.get_resources, uri=FOLDERS_LIST)
         self._update_info_from_token()
         saved = self.info.folder_id
         r = []
@@ -130,7 +133,7 @@ class Source:
 
     def get_docs(self):
         client = self._get_client()
-        feed = client.get_resources(uri=FOLDER_CONTENT % self.info.folder_id)
+        feed = self._call(client.get_resources, uri=FOLDER_CONTENT % self.info.folder_id)
         self._update_info_from_token()
         r = []
         for x in feed.entry:
