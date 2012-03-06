@@ -58,29 +58,36 @@ class Source:
                                  scope=GD_SCOPE,
                                  user_agent=USER_AGENT)
 
-    def maybe_info(self):
+    def _maybe_info(self):
         collection = meta.get_collection(self.userid, self.collection_id)
         return SourceInfo(collection["sources"])
 
-    def load(self):
-        self.info = self.maybe_info()
+    def _load(self):
+        self.info = self._maybe_info()
 
-    def save(self):
+    def _save(self):
         meta.edit_collection(self.userid, self.collection_id, sources=self.info())
 
-    def create_info_from_token(self):
+    def _create_info_from_token(self):
         self.info = SourceInfo([{"type": "gd"}])
-        self.update_info_from_token()
+        self._update_info_from_token()
 
-    def update_info_from_token(self):
+    def _update_info_from_token(self):
         self.info.access_token = self.token.access_token
         self.info.refresh_token = self.token.refresh_token
         self.info.token_expiry = self.token.token_expiry
 
-    def update_token_from_info(self):
+    def _update_token_from_info(self):
         self.token.access_token = self.info.access_token
         self.token.refresh_token = self.info.refresh_token
         self.token.token_expiry = self.info.token_expiry
+
+    def _get_client(self):
+        client = DocsClient()
+        client.http_client.debug = system_params.gd_debug_mode
+        self._load()
+        self._update_token_from_info()
+        return self.token.authorize(client)
 
     def oauth2_step1_get_url(self):
         return self.token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
@@ -92,20 +99,23 @@ class Source:
     def oauth2_step2_run(self, code):
         self.token.redirect_uri = system_params.gd_oauth_redirect_uri
         self.token.get_access_token(code)
-        self.create_info_from_token()
-        self.save()
+        self._create_info_from_token()
+        self._save()
 
-    def get_client(self):
-        client = DocsClient()
-        client.http_client.debug = system_params.gd_debug_mode
-        self.load()
-        self.update_token_from_info()
-        return self.token.authorize(client)
+    def is_complete(self):
+        i = self._maybe_info()
+        return i.is_complete()
+
+    def set_folder(self, folder_id):
+        self._load()
+        self.info.folder_id = folder_id
+        self._save()
+        platform.update_meta(self.collection_id)
 
     def get_folders(self):
-        client = self.get_client()
+        client = self._get_client()
         feed = client.get_resources(uri=FOLDERS_LIST)
-        self.update_info_from_token()
+        self._update_info_from_token()
         saved = self.info.folder_id
         r = []
         for x in feed.entry:
@@ -118,20 +128,10 @@ class Source:
             r.append(item)
         return r
 
-    def is_complete(self):
-        i = self.maybe_info()
-        return i.is_complete()
-
-    def set_folder(self, folder_id):
-        self.load()
-        self.info.folder_id = folder_id
-        self.save()
-        platform.update_meta(self.collection_id)
-
     def get_docs(self):
-        client = self.get_client()
+        client = self._get_client()
         feed = client.get_resources(uri=FOLDER_CONTENT % self.info.folder_id)
-        self.update_info_from_token()
+        self._update_info_from_token()
         r = []
         for x in feed.entry:
             doctype, docid = tuple(x.resource_id.text.split(":"))
