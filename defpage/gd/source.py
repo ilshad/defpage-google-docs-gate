@@ -48,78 +48,77 @@ class SourceInfo:
 
 class Source:
 
-    info = None # SourceInfo
+    _info = None # SourceInfo
 
     def __init__(self, collection_id, userid):
-        self.collection_id = collection_id
-        self.userid = userid
-        self.token = OAuth2Token(client_id=system_params.gd_oauth_client_id,
+        self._collection_id = collection_id
+        self._userid = userid
+        self._token = OAuth2Token(client_id=system_params.gd_oauth_client_id,
                                  client_secret=system_params.gd_oauth_client_secret,
                                  scope=GD_SCOPE,
                                  user_agent=USER_AGENT)
 
     def _maybe_info(self):
-        collection = meta.get_collection(self.userid, self.collection_id)
+        collection = meta.get_collection(self._userid, self._collection_id)
         return SourceInfo(collection["sources"])
 
     def _load(self):
-        self.info = self._maybe_info()
+        self._info = self._maybe_info()
 
     def _save(self):
-        meta.edit_collection(self.userid, self.collection_id, sources=self.info())
+        meta.edit_collection(self._userid, self._collection_id, sources=self._info())
 
     def _create_info_from_token(self):
-        self.info = SourceInfo([{"type": "gd"}])
+        self._info = SourceInfo([{"type": "gd"}])
         self._update_info_from_token()
 
     def _update_info_from_token(self):
-        self.info.access_token = self.token.access_token
-        self.info.refresh_token = self.token.refresh_token
-        self.info.token_expiry = self.token.token_expiry
+        self._info.access_token = self._token.access_token
+        self._info.refresh_token = self._token.refresh_token
+        self._info.token_expiry = self._token.token_expiry
 
     def _update_token_from_info(self):
-        self.token.access_token = self.info.access_token
-        self.token.refresh_token = self.info.refresh_token
-        self.token.token_expiry = self.info.token_expiry
+        self._token.access_token = self._info.access_token
+        self._token.refresh_token = self._info.refresh_token
+        self._token.token_expiry = self._info.token_expiry
 
     def _get_client(self):
         client = DocsClient()
         client.http_client.debug = system_params.gd_debug_mode
         self._load()
         self._update_token_from_info()
-        return self.token.authorize(client)
+        return self._token.authorize(client)
 
     def _call(self, method, **kw):
         return method(**kw)
 
     def oauth2_step1_get_url(self):
-        return self.token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
+        return self._token.generate_authorize_url(system_params.gd_oauth_redirect_uri,
                                                  response_type='code',
-                                                 state=str(self.collection_id),
+                                                 state=str(self._collection_id),
                                                  access_type='offline',
                                                  approval_prompt='force')
 
     def oauth2_step2_run(self, code):
-        self.token.redirect_uri = system_params.gd_oauth_redirect_uri
-        self.token.get_access_token(code)
+        self._token.redirect_uri = system_params.gd_oauth_redirect_uri
+        self._token.get_access_token(code)
         self._create_info_from_token()
         self._save()
 
     def is_complete(self):
-        i = self._maybe_info()
-        return i.is_complete()
+        return self._maybe_info().is_complete()
 
     def set_folder(self, folder_id):
         self._load()
-        self.info.folder_id = folder_id
+        self._info.folder_id = folder_id
         self._save()
-        platform.update_meta(self.collection_id)
+        platform.update_meta(self._collection_id)
 
     def get_folders(self):
         client = self._get_client()
         feed = self._call(client.get_resources, uri=FOLDERS_LIST)
         self._update_info_from_token()
-        saved = self.info.folder_id
+        saved = self._info.folder_id
         r = []
         for x in feed.entry:
             folder_id = x.resource_id.text
@@ -133,7 +132,7 @@ class Source:
 
     def get_docs(self):
         client = self._get_client()
-        feed = self._call(client.get_resources, uri=FOLDER_CONTENT % self.info.folder_id)
+        feed = self._call(client.get_resources, uri=FOLDER_CONTENT % self._info.folder_id)
         self._update_info_from_token()
         r = []
         for x in feed.entry:
