@@ -23,9 +23,8 @@ class SourceTypeException(Exception):
 
 class SourceInfo:
 
-    def __init__(self, sources):
-        if len(sources) > 0:
-            info = sources[0]
+    def __init__(self, info):
+        if info:
             if info["type"] == "gd":
                 self.folder_id = info.get("folder_id", "")
                 self.access_token = info.get("access_token", "")
@@ -41,7 +40,7 @@ class SourceInfo:
                 "access_token": self.access_token,
                 "refresh_token": self.refresh_token,
                 "token_expiry": int(time.mktime(self.token_expiry.timetuple()))}
-        return [info] # only one source currently allowed
+        return info
 
     def is_complete(self):
         return bool(self.folder_id)
@@ -60,16 +59,16 @@ class Source:
 
     def _maybe_info(self):
         collection = meta.get_collection(self._userid, self._collection_id)
-        return SourceInfo(collection["sources"])
+        return SourceInfo(collection["source"])
 
     def _load(self):
         self._info = self._maybe_info()
 
     def _save(self):
-        meta.edit_collection(self._userid, self._collection_id, sources=self._info())
+        meta.edit_collection(self._userid, self._collection_id, source=self._info())
 
     def _create_info_from_token(self):
-        self._info = SourceInfo([{"type": "gd"}])
+        self._info = SourceInfo({"type": "gd"})
         self._update_info_from_token()
 
     def _update_info_from_token(self):

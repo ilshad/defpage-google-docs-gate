@@ -39,10 +39,10 @@ def api(func):
 def manage_collection(req):
     cid = int(req.matchdict["name"])
     collection = meta.get_collection(req.user.userid, cid)
-    sources = collection["sources"]
+    source = collection["source"]
 
-    if sources:
-        if sources[0]["type"] == "gd":
+    if source:
+        if source["type"] == "gd":
             return HTTPFound(location="/collection/%s/select_folder" % cid)
         return render_to_response("defpage.gd:templates/gd_forbidden.pt",
                                   {"collection":collection}, request=req)
