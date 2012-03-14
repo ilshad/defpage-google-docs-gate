@@ -15,7 +15,7 @@ def _call(userid, url, method, body=None, headers={}):
     return r, c
 
 def get_collection(userid, cid):
-    r,c = _call(userid, "/collections/" + str(cid), "GET", None)
+    r,c = _call(userid, "/collections/" + str(cid), "GET")
     if r.status == 200:
         return json.loads(c)
     elif r.status == 404:
@@ -26,3 +26,7 @@ def edit_collection(userid, cid, **kw):
     r,c = _call(userid, "/collections/" + str(cid), "POST", json.dumps(kw))
     if r.status != 204:
         raise ServiceCallError
+
+def check_source(userid):
+    r,c = _call(userid, "/sources/%s/gd" % userid, "HEAD")
+    return r.status == 200

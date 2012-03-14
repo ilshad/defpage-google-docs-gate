@@ -47,7 +47,11 @@ def manage_collection(req):
         return render_to_response("defpage.gd:templates/gd_forbidden.pt",
                                   {"collection":collection}, request=req)
 
-    if req.POST.get("continue"):
+    elif req.POST.get("continue"):
+        if meta.check_source(req.user.userid):
+            s = Source(cid, req.user.userid)
+            s.save_type()
+            return HTTPFound(location="/collection/%s/select_folder" % cid)
         s = Source(cid, req.user.userid)
         url = s.oauth2_step1_get_url()
         logger.info("Request access: %s" % url)

@@ -39,7 +39,8 @@ class SourceInfo:
                 "folder_id": self.folder_id,
                 "access_token": self.access_token,
                 "refresh_token": self.refresh_token,
-                "token_expiry": int(time.mktime(self.token_expiry.timetuple()))}
+                "token_expiry": self.token_expiry and int(time.mktime(
+                    self.token_expiry.timetuple()))}
         return info
 
     def is_complete(self):
@@ -104,6 +105,10 @@ class Source:
     def is_complete(self):
         return self._maybe_info().is_complete()
 
+    def save_type(self):
+        self._info = SourceInfo({"type": "gd"})
+        self._save()
+
     def set_folder(self, folder_id):
         self._load()
         self._info.folder_id = folder_id
@@ -114,6 +119,7 @@ class Source:
         client = self._get_client()
         feed = client.get_resources(uri=FOLDERS_LIST)
         self._update_info_from_token()
+        self._save()
         saved = self._info.folder_id
         r = []
         for x in feed.entry:
@@ -130,6 +136,7 @@ class Source:
         client = self._get_client()
         feed = client.get_resources(uri=FOLDER_CONTENT % self._info.folder_id)
         self._update_info_from_token()
+        self._save()
         r = []
         for x in feed.entry:
             doctype, docid = tuple(x.resource_id.text.split(":"))
