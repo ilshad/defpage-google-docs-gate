@@ -28,8 +28,8 @@ def edit_collection(userid, cid, **kw):
         raise ServiceCallError
 
 def set_source(userid, cid, force):
-    body = json.dumps({"collection":cid, "force":force})
-    r,c = _call(userid, "/sources/%s/gd" + str(userid), "POST", body)
+    body = json.dumps({"collection_id":cid, "force":force})
+    r,c = _call(userid, "/sources/%s/gd" % str(userid), "POST", body)
     if r.status == 204:
         return True
     elif r.status in (403, 404):
