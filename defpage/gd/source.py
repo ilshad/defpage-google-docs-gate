@@ -105,10 +105,6 @@ class Source:
     def is_complete(self):
         return self._maybe_info().is_complete()
 
-    def save_type(self):
-        self._info = SourceInfo({"type": "gd"})
-        self._save()
-
     def set_folder(self, folder_id):
         self._load()
         self._info.folder_id = folder_id

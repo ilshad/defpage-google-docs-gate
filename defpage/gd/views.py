@@ -48,9 +48,7 @@ def manage_collection(req):
                                   {"collection":collection}, request=req)
 
     elif req.POST.get("continue"):
-        if meta.check_source(req.user.userid):
-            s = Source(cid, req.user.userid)
-            s.save_type()
+        if meta.set_source(req.user.userid, cid, False):
             return HTTPFound(location="/collection/%s/select_folder" % cid)
         s = Source(cid, req.user.userid)
         url = s.oauth2_step1_get_url()
