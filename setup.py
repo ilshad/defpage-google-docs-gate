@@ -9,7 +9,8 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'pyramid',
-    'WebError',
+    'pyramid_debugtoolbar',
+    'waitress',
     'httplib2',
     'defpage.lib',
     'gdata',
@@ -32,6 +33,5 @@ setup(name='defpage.gd',
       entry_points = """\
       [paste.app_factory]
       main = defpage.gd:main
-      """,
-      paster_plugins=['pyramid'],
+      """
       )
