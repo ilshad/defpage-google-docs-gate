@@ -1,7 +1,5 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xml:lang="ru">
+<!DOCTYPE html>
+<html>
   <metal:block use-macro="layout.macros['master']">
     <metal:block fill-slot="main">
       <div id="collection_id" style="display:none">${request.matchdict["name"]}</div>
