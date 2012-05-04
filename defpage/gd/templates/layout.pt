@@ -16,7 +16,7 @@
     </head>
     <body>
       <div tal:attributes="class string: container ${request.GET.get('x') and 'showgrid'}">
-	<div id="header" class="span-800">
+	<header id="header" class="span-800">
 	  <div class="span-500 first">
 	    <a href="${base_url}" id="logo">
 	      <span class="logo1">def</span><span class="logo2">page</span>
@@ -35,7 +35,7 @@
 	      </div>
 	    </tal:block>
 	  </div>
-	</div>
+	</header>
 	<div id="cleartop"></div>
 	<div class="span-800">
 	  <metal:block define-slot="messages">
@@ -47,15 +47,15 @@
 	    <metal:block define-slot="main"></metal:block>
 	  </div>
 	</div>
-	<div class="span-800" id="footer">
-	  <div class="span-400" id="addinfo">
+	<footer class="span-800">
+	  <nav class="span-400">
 	    <a href="${help_url}/about">About</a>
 	    <a href="${help_url}">Help</a>
-	  </div>
+	  </nav>
 	  <div class="span-400 last textalign-right" id="copyrights">
 	    <a href="/">defpage &copy; 2011</a>
 	  </div>
-	</div>
+	</footer>
       </div>
       <div id="ajax_loader">&nbsp;</div>
     </body>
