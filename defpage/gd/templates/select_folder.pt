@@ -23,7 +23,9 @@
 	<input type="hidden" name="folder_title" id="folder_title" value="" />
 	<input type="submit" disabled name="submit" id="submit" class="first" value="Save" />
       </form>
+    </metal:block>
 
+    <metal:block fill-slot="scripts">
       <script type="text/javascript">
 	$(function () {
 	    function select_folder (element) {
@@ -58,7 +60,6 @@
                       });
 	});
       </script>
-
     </metal:block>
   </metal:block>
 </html>

@@ -1,18 +1,25 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
   <metal:block define-macro="master">
     <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
       <title>defpage</title>
-      <meta charset="utf-8">
+      <meta name="description" content="" />
+      <meta name="author" content="" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="${static_url}/images/favicon.ico" />
+      <link rel="apple-touch-icon" href="${static_url}/images/big_icon.png" />
       <link rel="stylesheet" href="${static_url}/css/screen.css" type="text/css" media="screen, projection" />
       <link rel="stylesheet" href="${static_url}/css/print.css" type="text/css" media="print" />
       <!--[if lt IE 8]>
 	  <link rel="stylesheet" href="${static_url}/css/ie.css" type="text/css" media="screen, projection">
       <![endif]-->
-      <script type="text/javascript" src="${static_url}/js/jquery-1.7.1.min.js"></script>
-      <script type="text/javascript" src="${static_url}/js/jqplug.js"></script>
-      <script type="text/javascript" src="${static_url}/js/defpage.js"></script>
+      <script src="${static_url}/js/modernizr.js"></script>
     </head>
     <body>
       <div tal:attributes="class string: container ${request.GET.get('x') and 'showgrid'}">
@@ -58,6 +65,11 @@
 	</footer>
       </div>
       <div id="ajax_loader">&nbsp;</div>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+      <script>!window.jQuery && document.write(unescape('%3Cscript src="${static_url}/js/jquery-1.7.2.min.js"%3E%3C/script%3E'))</script>
+      <script type="text/javascript" src="${static_url}/js/libs.js"></script>
+      <script type="text/javascript" src="${static_url}/js/defpage.js"></script>
+      <metal:block define-slot="scripts"></metal:block>
     </body>
   </metal:block>
 </html>
