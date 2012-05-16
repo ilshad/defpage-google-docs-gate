@@ -9,7 +9,7 @@
 	    Then, the selected folder in Google Docs will be synchronized
 	    with this collection.</p>
 	  <input type="submit" name="continue" value="Continue" />
-	  <a href="${base_url}/collection/${request.matchdict['name']}">Cancel</a>
+	  <a href="${base_url}/collection/${request.matchdict['name']}/source">Cancel</a>
 	</fieldset>
       </form>
     </metal:block>
