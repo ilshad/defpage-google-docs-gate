@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <metal:block use-macro="layout.macros['master']">
     <metal:block fill-slot="main">
