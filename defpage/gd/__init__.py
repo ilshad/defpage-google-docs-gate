@@ -9,7 +9,12 @@ from defpage.gd.config import system_params
 
 def main(global_config, **settings):
     system_params.update(settings)
-    session_factory = UnencryptedCookieSessionFactoryConfig("Gfj8bTsA")
+
+    session_factory = UnencryptedCookieSessionFactoryConfig(
+        system_params.unencrypted_session_cookie_secret,
+        cookie_name=system_params.unencrypted_session_cookie_name,
+        cookie_domain=system_params.common_cookies_domain)
+
     authentication_policy = UserInfoAuthenticationPolicy()
     config = Configurator()
     config.setup_registry(settings=settings,
