@@ -140,7 +140,7 @@ class Source:
                 r.append({"id":docid, "title":x.title.text, "modified":x.updated.text})
         return r
 
-    def document(self, uid):
+    def content(self, uid):
         client = self._get_client()
         resource = client.get_resource_by_id(uid)
         content = client.download_resource_to_memory(resource)

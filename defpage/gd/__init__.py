@@ -68,7 +68,7 @@ def main(global_config, **settings):
                     renderer="json",
                     request_method="GET")
 
-    config.add_route("api_document", "/api/collection/{name}/documents/{uid}",
+    config.add_route("api_document", "/api/documents/{name}",
                      custom_predicates=(is_int,))
     config.add_view(route_name="api_document",
                     view="defpage.gd.views.api_document",
