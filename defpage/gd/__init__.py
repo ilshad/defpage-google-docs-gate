@@ -70,7 +70,7 @@ def main(global_config, **settings):
 
     config.add_route("api_document", "/api/collection/{name}/documents/{uid}",
                      custom_predicates=(is_int,))
-    config.add_view(route_name="api_collection",
+    config.add_view(route_name="api_document",
                     view="defpage.gd.views.api_document",
                     renderer="json",
                     request_method="GET")
