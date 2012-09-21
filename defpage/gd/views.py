@@ -109,12 +109,9 @@ def api_collection(req):
 
 @api
 def api_document(req):
-    meta = meta.get_document(req.matchdict["name"])
-    if meta["source"]["type"] != "gd":
-        raise HTTPNotFound
-    s = Source(meta["collection_id"], system_params.system_user)
+    s = Source(int(req.matchdict["name"]), system_params.system_user)
     try:
-        content = s.content(meta["source"]["id"])
+        content = s.content(req.matchdict["uid"])
     except SourceTypeException:
         raise HTTPNotFound
     print content

@@ -35,11 +35,3 @@ def set_source(userid, cid, force):
     elif r.status in (403, 404):
         return False
     raise ServiceCallError
-
-def get_document(docid):
-    r,c = _call(userid, "/documents/" + str(docid), "GET")
-    if r.status == 200:
-        return json.loads(c)
-    elif r.status == 404:
-        raise HTTPNotFound
-    raise ServiceCallError
