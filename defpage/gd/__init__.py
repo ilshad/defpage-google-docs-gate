@@ -68,4 +68,11 @@ def main(global_config, **settings):
                     renderer="json",
                     request_method="GET")
 
+    config.add_route("api_document", "/api/collection/{name}/documents/{uid}",
+                     custom_predicates=(is_int,))
+    config.add_view(route_name="api_collection",
+                    view="defpage.gd.views.api_document",
+                    renderer="json",
+                    request_method="GET")
+
     return config.make_wsgi_app()

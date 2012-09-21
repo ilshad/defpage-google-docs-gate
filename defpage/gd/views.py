@@ -106,3 +106,13 @@ def api_collection(req):
         return s.get_docs()
     except SourceTypeException:
         raise HTTPNotFound
+
+@api
+def api_document(req):
+    s = Source(int(req.matchdict["name"]), system_params.system_user)
+    try:
+        d = s.document(req.matchdict["uid"])
+    except SourceTypeException:
+        raise HTTPNotFound
+    print r
+    return {}
