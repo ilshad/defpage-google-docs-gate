@@ -1,5 +1,6 @@
 import json
 import logging
+import base64
 from pyramid.settings import asbool
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound
@@ -10,6 +11,7 @@ from defpage.gd.config import system_params
 from defpage.gd.source import Source
 from defpage.gd.source import SourceTypeException
 from defpage.gd import meta
+from defpage.gd import parser
 
 logger = logging.getLogger("defpage.gd")
 
@@ -111,8 +113,8 @@ def api_collection(req):
 def api_document(req):
     s = Source(int(req.matchdict["name"]), system_params.system_user)
     try:
-        content = s.content(req.matchdict["uid"])
+        c = s.content(req.matchdict["uid"])
     except SourceTypeException:
         raise HTTPNotFound
-    print content
-    return {}
+    body = parser.extract_body(c)
+    return {"body":base64.standard_b64encode(body)}

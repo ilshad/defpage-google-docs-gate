@@ -143,7 +143,7 @@ class Source:
     def content(self, uid):
         client = self._get_client()
         resource = client.get_resource_by_id(uid)
-        content = client.download_resource_to_memory(resource)
+        c = client.download_resource_to_memory(resource)
         self._update_info_from_token()
         self._save()
-        return content
+        return c
