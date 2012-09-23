@@ -1,12 +1,8 @@
 import bs4
 
-def title(source):
+def parse(source):
     soup = bs4.BeautifulSoup(source)
-    return soup.find('title').text
-
-def body(source):
-    soup = bs4.BeautifulSoup(source)
-    return soup.find('body').renderContents()
-
-def attributes(source):
-    return []
+    r = {}
+    r["title"] = soup.find('title').text
+    r["body"] = soup.find('body').renderContents()
+    return r

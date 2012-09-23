@@ -114,7 +114,10 @@ def api_document(req):
         c = s.content(req.matchdict["uid"])
     except SourceTypeException:
         raise HTTPNotFound
-    r = {}
-    for i in parser.attributes(c):
-        pass
-    return r
+    fields = parser.parse(c)
+    r = ''
+    for k,v in fields.items():
+        if k != "body":
+            r += '*%s*\n%s\n\n' % (k, v)
+    r += '*body*\n%s' % fields["body"]            
+    return Response(body=r, content_type='text/plain')
