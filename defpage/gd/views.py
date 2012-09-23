@@ -1,6 +1,4 @@
-import json
 import logging
-import base64
 from pyramid.settings import asbool
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound
@@ -99,7 +97,7 @@ def select_folder(req):
 @authenticated
 def folders_json(req):
     s = Source(int(req.matchdict["name"]), req.user.userid)
-    return Response(body=json.dumps(s.get_folders()), content_type="application/json")
+    return s.get_folders()
 
 @api
 def api_collection(req):
@@ -116,5 +114,7 @@ def api_document(req):
         c = s.content(req.matchdict["uid"])
     except SourceTypeException:
         raise HTTPNotFound
-    body = parser.extract_body(c)
-    return {"body":base64.standard_b64encode(body)}
+    r = {}
+    for i in parser.attributes(c):
+        pass
+    return r

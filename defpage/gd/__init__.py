@@ -57,8 +57,9 @@ def main(global_config, **settings):
 
     config.add_route("folders_json", "/collection/{name}/folders_json",
                      custom_predicates=(is_int,))
-    config.add_view(route_name="folders_json",
-                    view="defpage.gd.views.folders_json")
+    config.add_view("defpage.gd.views.folders_json",
+                    route_name="folders_json",
+                    renderer="json")
 
     # API
     config.add_route("api_collection", "/api/collection/{name}/documents",
@@ -72,7 +73,6 @@ def main(global_config, **settings):
                      custom_predicates=(is_int,))
     config.add_view(route_name="api_document",
                     view="defpage.gd.views.api_document",
-                    renderer="json",
                     request_method="GET")
 
     return config.make_wsgi_app()
