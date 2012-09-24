@@ -118,6 +118,6 @@ def api_document(req):
     r = ''
     for k,v in fields.items():
         if k != "body":
-            r += '*%s*\n%s\n\n' % (k, v)
-    r += '*body*\n%s' % fields["body"]            
+            r += u'*%s*\n%s\n\n' % (k, v)
+    r += u'*body*\n%s' % fields["body"]
     return Response(body=r, content_type='text/plain')
