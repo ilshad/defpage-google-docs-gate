@@ -14,7 +14,7 @@ requires = [
     'httplib2',
     'defpage.lib',
     'gdata',
-    'beautifulsoup4'
+    'lxml'
     ]
 
 if sys.version_info[:3] < (2,5,0):
