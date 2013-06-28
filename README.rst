@@ -1,17 +1,17 @@
-=======================
-defpage.com Google Docs
-=======================
+===================
+defpage Google Docs
+===================
 
 Deploy
 ======
 
 Create virtual environment::
 
-  $ git clone git@spacta.com:defpage/gd.git
+  $ git clone git@github.com:astoon/defpage-google-docs-gate.git
   $ cd gd
   $ virtualenv --no-site-packages --distribute .
 
-Install shared python library for defpage (take it here: git@spacta.com:defpage/pylib.git)::
+Install shared python library for defpage (take it here: git@github.com:astoon/defpage-pylib.git)::
 
   $ bin/pip install -e [ path_to_pylib ]
 
